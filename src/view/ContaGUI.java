@@ -16,6 +16,8 @@ import java.util.List;
 
 
 import java.io.IOException;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import javax.swing.JOptionPane;
 
 
@@ -109,6 +111,8 @@ public class ContaGUI extends javax.swing.JFrame {
         FiltrarSaldo = new javax.swing.JButton();
         SaldoTotal = new javax.swing.JButton();
         AgruparFaixa = new javax.swing.JButton();
+        SaldoMaiorPredicate = new javax.swing.JButton();
+        OrdenarNomes = new javax.swing.JButton();
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -215,6 +219,20 @@ public class ContaGUI extends javax.swing.JFrame {
             }
         });
 
+        SaldoMaiorPredicate.setText("Saldo > 5.000");
+        SaldoMaiorPredicate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SaldoMaiorPredicateActionPerformed(evt);
+            }
+        });
+
+        OrdenarNomes.setText("Ordenar Nomes");
+        OrdenarNomes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                OrdenarNomesActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -244,12 +262,15 @@ public class ContaGUI extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(CriarConta))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(AgruparFaixa, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(FiltrarSaldo, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(SaldoMaiorPredicate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(AgruparFaixa, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(FiltrarSaldo, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
-                        .addComponent(SaldoTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 53, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(SaldoTotal, javax.swing.GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE)
+                            .addComponent(OrdenarNomes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 204, Short.MAX_VALUE)
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(43, 43, 43))
         );
@@ -286,9 +307,14 @@ public class ContaGUI extends javax.swing.JFrame {
                             .addComponent(SaldoTotal))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(AgruparFaixa)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(25, Short.MAX_VALUE))
+                        .addGap(48, 48, 48)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(SaldoMaiorPredicate)
+                            .addComponent(OrdenarNomes))
+                        .addGap(94, 94, 94)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(21, 21, 21))
         );
 
         pack();
@@ -485,6 +511,27 @@ public class ContaGUI extends javax.swing.JFrame {
         });
     }//GEN-LAST:event_AgruparFaixaActionPerformed
 
+    private void SaldoMaiorPredicateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaldoMaiorPredicateActionPerformed
+        // TODO add your handling code here:
+        txtAreaArquivo.append("\nContas com o saldo superior a R$5.000 e com número de conta Par:\n\n");
+        
+        Predicate<ContaCorrente> salarioMaior = s -> s.getSaldo() > 5000 && s.getNumero() % 2 == 0;
+        
+        List<ContaCorrente> filtrados = contaService.getContas().stream()
+                .filter(salarioMaior)
+                .collect(Collectors.toList());
+        
+        filtrados.forEach((conta) -> {
+            txtAreaArquivo.append(conta.getNumero() + " " + conta.getTitular() + " " + conta.getSaldo());
+        });
+        
+    }//GEN-LAST:event_SaldoMaiorPredicateActionPerformed
+
+    private void OrdenarNomesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OrdenarNomesActionPerformed
+        // TODO add your handling code here:
+        // FAZER ESSA PARTE (EM PADRÃO DE PROJETO STRATEGY)
+    }//GEN-LAST:event_OrdenarNomesActionPerformed
+
   
 
     
@@ -526,6 +573,8 @@ public class ContaGUI extends javax.swing.JFrame {
     private javax.swing.JButton AgruparFaixa;
     private javax.swing.JButton CriarConta;
     private javax.swing.JButton FiltrarSaldo;
+    private javax.swing.JButton OrdenarNomes;
+    private javax.swing.JButton SaldoMaiorPredicate;
     private javax.swing.JButton SaldoTotal;
     private javax.swing.JTable TabelaContas;
     private javax.swing.JButton btnDepositar;
