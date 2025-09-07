@@ -6,6 +6,8 @@ import model.ContaCorrente;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
+import java.util.List;
+import model.Conta;
 
 public class ContaService {
 
@@ -85,5 +87,9 @@ public class ContaService {
             linhas.add(c.getNumero() + "," + c.getTitular() + "," + c.getSaldo());
         }
         Files.write(Paths.get(caminho), linhas, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+    }
+
+    public List<Conta> getConta() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

@@ -6,6 +6,7 @@ package view;
 
 import exception.SaldoInsuficienteException;
 import model.ContaCorrente;
+import model.Conta;
 import service.ContaService;
 import java.util.ArrayList;
 import static java.util.stream.Collectors.*;
@@ -16,9 +17,12 @@ import java.util.List;
 
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.swing.JOptionPane;
+import strategy.TarifaStrategy;
 
 
 /**
@@ -39,6 +43,11 @@ public class ContaGUI extends javax.swing.JFrame {
         initComponents();
         carregarDados();
         atualizarTabela();
+        
+        btnFixa.addActionListener(e -> aplicarTarifa(TarifaStrategy.FIXA));
+        btnPercentual.addActionListener(e -> aplicarTarifa(TarifaStrategy.PERCENTUAL));
+        btnIsenta.addActionListener(e -> aplicarTarifa(TarifaStrategy.ISENTA));
+        
         
         TabelaContas.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) { 
@@ -61,6 +70,20 @@ public class ContaGUI extends javax.swing.JFrame {
                 txtTitular.setText(conta.getTitular());
                 txtSaldo.setText("R$ " + String.format("%.2f", conta.getSaldo()));
             }
+        });
+    }
+    
+    private void aplicarTarifa(TarifaStrategy strategy) {
+        List<ContaCorrente> contas = contaService.getContas();
+
+        txtAreaArquivo.setText("\nTarifas (" + strategy + "):\n\n");
+
+        contas.forEach(conta -> {
+            double tarifa = strategy.calcular(conta.getSaldo());
+            txtAreaArquivo.append(conta.getNumero() + " "
+                                 + conta.getTitular() + " "
+                                 + conta.getSaldo() + " -> Tarifa: "
+                                 + tarifa + "\n");
         });
     }
     
@@ -113,6 +136,11 @@ public class ContaGUI extends javax.swing.JFrame {
         AgruparFaixa = new javax.swing.JButton();
         SaldoMaiorPredicate = new javax.swing.JButton();
         OrdenarNomes = new javax.swing.JButton();
+        SalarioDecrescente = new javax.swing.JButton();
+        lblNumero1 = new javax.swing.JLabel();
+        btnPercentual = new javax.swing.JButton();
+        btnFixa = new javax.swing.JButton();
+        btnIsenta = new javax.swing.JButton();
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -233,6 +261,21 @@ public class ContaGUI extends javax.swing.JFrame {
             }
         });
 
+        SalarioDecrescente.setText("Salário Decrescente");
+        SalarioDecrescente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SalarioDecrescenteActionPerformed(evt);
+            }
+        });
+
+        lblNumero1.setText("Tarifas:");
+
+        btnPercentual.setText("Percentual");
+
+        btnFixa.setText("Fixa");
+
+        btnIsenta.setText("Isenta");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -268,11 +311,22 @@ public class ContaGUI extends javax.swing.JFrame {
                             .addComponent(FiltrarSaldo, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(SaldoTotal, javax.swing.GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE)
-                            .addComponent(OrdenarNomes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 204, Short.MAX_VALUE)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(43, 43, 43))
+                            .addComponent(SaldoTotal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(OrdenarNomes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(SalarioDecrescente))))
+                .addGap(17, 17, 17)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btnPercentual, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnIsenta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnFixa, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 101, Short.MAX_VALUE)
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(43, 43, 43))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lblNumero1, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -283,20 +337,32 @@ public class ContaGUI extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(txtNumero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblNumero))
+                            .addComponent(lblNumero)
+                            .addComponent(lblNumero1))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(txtTitular, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblTitular))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtSaldo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblSaldo))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblSaque)
-                            .addComponent(txtSaque, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
+                            .addComponent(lblTitular)
+                            .addComponent(btnFixa))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(txtSaldo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lblSaldo)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(19, 19, 19)
+                                .addComponent(btnPercentual)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(lblSaque)
+                                    .addComponent(txtSaque, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(16, 16, 16)
+                                .addComponent(btnIsenta)))
+                        .addGap(24, 24, 24)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnDepositar)
                             .addComponent(btnSacar)
@@ -311,8 +377,10 @@ public class ContaGUI extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(SaldoMaiorPredicate)
                             .addComponent(OrdenarNomes))
-                        .addGap(94, 94, 94)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
+                        .addComponent(SalarioDecrescente)
+                        .addGap(53, 53, 53)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(21, 21, 21))
         );
@@ -515,9 +583,9 @@ public class ContaGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
         txtAreaArquivo.append("\nContas com o saldo superior a R$5.000 e com número de conta Par:\n\n");
         
-        Predicate<ContaCorrente> salarioMaior = s -> s.getSaldo() > 5000 && s.getNumero() % 2 == 0;
+        Predicate<Conta> salarioMaior = s -> s.getSaldo() > 5000 && s.getNumero() % 2 == 0;
         
-        List<ContaCorrente> filtrados = contaService.getContas().stream()
+        List<Conta> filtrados = contaService.getContas().stream()
                 .filter(salarioMaior)
                 .collect(Collectors.toList());
         
@@ -529,8 +597,34 @@ public class ContaGUI extends javax.swing.JFrame {
 
     private void OrdenarNomesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OrdenarNomesActionPerformed
         // TODO add your handling code here:
-        // FAZER ESSA PARTE (EM PADRÃO DE PROJETO STRATEGY)
+       Comparator<Conta> ordenacaoNomes = (t1, t2) -> t1.getTitular().compareTo(t2.getTitular());
+       
+       List<Conta> nomesOrdenados = contaService.getContas().stream()
+               .sorted(ordenacaoNomes)
+               .collect(Collectors.toList());
+       
+        
+        txtAreaArquivo.append("\nNomes Ordenados em Ordem alfabética:\n\n");
+        
+        nomesOrdenados.forEach((conta) -> {
+            txtAreaArquivo.append(conta.getNumero() + " " + conta.getTitular() + " " + conta.getSaldo() + "\n");
+        });
     }//GEN-LAST:event_OrdenarNomesActionPerformed
+
+    private void SalarioDecrescenteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SalarioDecrescenteActionPerformed
+        // TODO add your handling code here:
+        Comparator<Conta> salarioDecrescente = (s1, s2) -> Double.compare(s2.getSaldo(), s1.getSaldo());
+        
+        List<Conta> salariosOrdenados = contaService.getContas().stream()
+               .sorted(salarioDecrescente)
+               .collect(Collectors.toList());
+        
+         txtAreaArquivo.append("\nSalários Ordenados em Ordem Decrescente:\n\n");
+        
+        salariosOrdenados.forEach((conta) -> {
+            txtAreaArquivo.append(conta.getNumero() + " " + conta.getTitular() + " " + conta.getSaldo() + "\n");
+        });
+    }//GEN-LAST:event_SalarioDecrescenteActionPerformed
 
   
 
@@ -574,10 +668,14 @@ public class ContaGUI extends javax.swing.JFrame {
     private javax.swing.JButton CriarConta;
     private javax.swing.JButton FiltrarSaldo;
     private javax.swing.JButton OrdenarNomes;
+    private javax.swing.JButton SalarioDecrescente;
     private javax.swing.JButton SaldoMaiorPredicate;
     private javax.swing.JButton SaldoTotal;
     private javax.swing.JTable TabelaContas;
     private javax.swing.JButton btnDepositar;
+    private javax.swing.JButton btnFixa;
+    private javax.swing.JButton btnIsenta;
+    private javax.swing.JButton btnPercentual;
     private javax.swing.JButton btnSacar;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
@@ -587,6 +685,7 @@ public class ContaGUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTable jTable1;
     private javax.swing.JLabel lblNumero;
+    private javax.swing.JLabel lblNumero1;
     private javax.swing.JLabel lblSaldo;
     private javax.swing.JLabel lblSaque;
     private javax.swing.JLabel lblTitular;

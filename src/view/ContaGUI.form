@@ -109,14 +109,29 @@
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="SaldoTotal" pref="118" max="32767" attributes="0"/>
+                          <Component id="SaldoTotal" max="32767" attributes="0"/>
                           <Component id="OrdenarNomes" max="32767" attributes="0"/>
+                          <Component id="SalarioDecrescente" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
-              <EmptySpace pref="204" max="32767" attributes="0"/>
-              <Component id="jScrollPane4" min="-2" pref="276" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="43" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="btnPercentual" alignment="0" max="32767" attributes="0"/>
+                          <Component id="btnIsenta" alignment="0" max="32767" attributes="0"/>
+                          <Component id="btnFixa" alignment="0" max="32767" attributes="0"/>
+                      </Group>
+                      <EmptySpace pref="101" max="32767" attributes="0"/>
+                      <Component id="jScrollPane4" min="-2" pref="276" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="43" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <Component id="lblNumero1" min="-2" pref="56" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
+                  </Group>
+              </Group>
           </Group>
       </Group>
     </DimensionLayout>
@@ -130,23 +145,41 @@
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="txtNumero" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="lblNumero" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblNumero1" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="txtTitular" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="lblTitular" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnFixa" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="txtSaldo" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="lblSaldo" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="txtSaldo" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="lblSaldo" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="-2" pref="19" max="-2" attributes="0"/>
+                              <Component id="btnPercentual" min="-2" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="lblSaque" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="txtSaque" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="lblSaque" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="txtSaque" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
+                              <Component id="btnIsenta" min="-2" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="btnDepositar" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="btnSacar" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -164,10 +197,12 @@
                           <Component id="SaldoMaiorPredicate" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="OrdenarNomes" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" pref="94" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="SalarioDecrescente" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="53" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace pref="14" max="32767" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
               <Component id="jScrollPane1" min="-2" pref="153" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
           </Group>
@@ -324,6 +359,34 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="OrdenarNomesActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="SalarioDecrescente">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Sal&#xe1;rio Decrescente"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="SalarioDecrescenteActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblNumero1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Tarifas:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnPercentual">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Percentual"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnFixa">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Fixa"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnIsenta">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Isenta"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>
