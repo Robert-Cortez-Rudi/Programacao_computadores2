@@ -540,25 +540,23 @@ public class ContaGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_btnDepositarActionPerformed
 
     private void atualizarTabela() {
-        int linhaSelecionada = TabelaContas.getSelectedRow();
+         int linhaSelecionada = TabelaContas.getSelectedRow();
+    DefaultTableModel model = (DefaultTableModel) TabelaContas.getModel();
 
-        for (int i = TabelaContas.getRowCount() - 1; i >= 0; i--) {
-            for (int j = 0; j < TabelaContas.getColumnCount(); j++) {
-                TabelaContas.setValueAt("", i, j);
-            }
-        }
+    model.setRowCount(0);
 
-        ArrayList<ContaCorrente> contas = contaService.getContas();
-        for (int i = 0; i < contas.size(); i++) {
-            ContaCorrente c = contas.get(i);
-            TabelaContas.setValueAt(c.getNumero(), i, 0);
-            TabelaContas.setValueAt(c.getTitular(), i, 1);
-            TabelaContas.setValueAt(String.format("R$ %.2f", c.getSaldo()), i, 2);
-        }
+    ArrayList<ContaCorrente> contas = contaService.getContas();
+    for (ContaCorrente c : contas) {
+        model.addRow(new Object[] {
+            c.getNumero(),
+            c.getTitular(),
+            String.format("R$ %.2f", c.getSaldo())
+        });
+    }
 
-        if (linhaSelecionada >= 0 && linhaSelecionada < contas.size()) {
-            TabelaContas.setRowSelectionInterval(linhaSelecionada, linhaSelecionada);
-        }
+    if (linhaSelecionada >= 0 && linhaSelecionada < model.getRowCount()) {
+        TabelaContas.setRowSelectionInterval(linhaSelecionada, linhaSelecionada);
+    }
 }
 
 
