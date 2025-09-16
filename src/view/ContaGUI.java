@@ -22,6 +22,7 @@ import java.util.Comparator;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 import strategy.TarifaStrategy;
 
 
@@ -89,18 +90,33 @@ public class ContaGUI extends javax.swing.JFrame {
     
     private void carregarDados() {
         contaService = new ContaService();
+    
         try {
-            this.conta = contaService.lerConta("conta.txt");
-            
-            txtNumero.setText(String.valueOf(conta.getNumero()));
-            txtTitular.setText(conta.getTitular());
-            txtSaldo.setText("R$ " + String.format("%.2f", conta.getSaldo()));
-            txtAreaArquivo.append("Conta carregada com sucesso!\n\n");
+            List<ContaCorrente> contas = contaService.carregarTodasContas();
+
+            DefaultTableModel model = (DefaultTableModel) TabelaContas.getModel();
+            model.setRowCount(0);
+
+            for (ContaCorrente c : contas) {
+                model.addRow(new Object[]{
+                    c.getNumero(),
+                    c.getTitular(),
+                    String.format("R$ %.2f", c.getSaldo())
+                });
+            }
+
+            if (!contas.isEmpty()) {
+                ContaCorrente primeira = contas.get(0);
+                TabelaContas.setRowSelectionInterval(0, 0);
+                txtNumero.setText(String.valueOf(primeira.getNumero()));
+                txtTitular.setText(primeira.getTitular());
+                txtSaldo.setText(String.format("R$ %.2f", primeira.getSaldo()));
+                txtAreaArquivo.append("Conta carregada com sucesso!\n\n");
+            }
 
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Erro ao acessar arquivo: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            txtAreaArquivo.append("Erro ao acessar o banco: " + e.getMessage());
         }
-
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -141,6 +157,14 @@ public class ContaGUI extends javax.swing.JFrame {
         btnPercentual = new javax.swing.JButton();
         btnFixa = new javax.swing.JButton();
         btnIsenta = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        OrigemTxt = new javax.swing.JTextField();
+        DestinoTxt = new javax.swing.JTextField();
+        ValorTxt = new javax.swing.JTextField();
+        TransferirBtn = new javax.swing.JButton();
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -276,6 +300,21 @@ public class ContaGUI extends javax.swing.JFrame {
 
         btnIsenta.setText("Isenta");
 
+        jLabel1.setText("Tranferir Dinheiro");
+
+        jLabel2.setText("Origem:");
+
+        jLabel3.setText("Valor:");
+
+        jLabel4.setText("Destino:");
+
+        TransferirBtn.setText("Tranferir");
+        TransferirBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TransferirBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -314,26 +353,50 @@ public class ContaGUI extends javax.swing.JFrame {
                             .addComponent(SaldoTotal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(OrdenarNomes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(SalarioDecrescente))))
-                .addGap(17, 17, 17)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnPercentual, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnIsenta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnFixa, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 101, Short.MAX_VALUE)
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(43, 43, 43))
-                    .addGroup(layout.createSequentialGroup()
+                        .addGap(17, 17, 17)
                         .addComponent(lblNumero1, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(17, 17, 17)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(btnPercentual, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(btnIsenta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(btnFixa, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(45, 45, 45)
+                                        .addComponent(jLabel1))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(4, 4, 4)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel2)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(OrigemTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel4)
+                                            .addComponent(jLabel3))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(TransferirBtn)
+                                                .addGap(0, 0, Short.MAX_VALUE))
+                                            .addComponent(DestinoTxt)
+                                            .addComponent(ValorTxt))))))
+                        .addGap(18, 50, Short.MAX_VALUE)
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(43, 43, 43))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(12, 12, 12)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 404, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(txtNumero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -367,22 +430,41 @@ public class ContaGUI extends javax.swing.JFrame {
                             .addComponent(btnDepositar)
                             .addComponent(btnSacar)
                             .addComponent(CriarConta))
-                        .addGap(42, 42, 42)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(FiltrarSaldo)
-                            .addComponent(SaldoTotal))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(AgruparFaixa)
-                        .addGap(48, 48, 48)
+                            .addComponent(SaldoTotal)
+                            .addComponent(jLabel1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(AgruparFaixa)
+                                .addGap(14, 14, 14))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel2)
+                                    .addComponent(OrigemTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(DestinoTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(ValorTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(SaldoMaiorPredicate)
                             .addComponent(OrdenarNomes))
-                        .addGap(18, 18, 18)
-                        .addComponent(SalarioDecrescente)
-                        .addGap(53, 53, 53)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(21, 21, 21))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(SalarioDecrescente)
+                            .addComponent(TransferirBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE))
+                        .addGap(235, 235, 235))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 404, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(21, 21, 21))))
         );
 
         pack();
@@ -626,6 +708,27 @@ public class ContaGUI extends javax.swing.JFrame {
         });
     }//GEN-LAST:event_SalarioDecrescenteActionPerformed
 
+    private void TransferirBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TransferirBtnActionPerformed
+        try {
+            int numeroOrigem = Integer.parseInt(OrigemTxt.getText().trim());
+            int numeroDestino = Integer.parseInt(DestinoTxt.getText().trim());
+            double valor = Double.parseDouble(ValorTxt.getText().trim());
+
+            ContaService contaService = new ContaService();
+            contaService.transferir(numeroOrigem, numeroDestino, valor);
+
+            txtAreaArquivo.append("Transferência realizada com sucesso!");
+
+            carregarDados();  
+
+        } catch (NumberFormatException e) {
+             txtAreaArquivo.append("Por favor, insira valores válidos.");
+        } catch (Exception e) {
+            txtAreaArquivo.append("Erro na transferência: " + e.getMessage());
+            e.printStackTrace();
+        } 
+    }//GEN-LAST:event_TransferirBtnActionPerformed
+
   
 
     
@@ -666,12 +769,16 @@ public class ContaGUI extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton AgruparFaixa;
     private javax.swing.JButton CriarConta;
+    private javax.swing.JTextField DestinoTxt;
     private javax.swing.JButton FiltrarSaldo;
     private javax.swing.JButton OrdenarNomes;
+    private javax.swing.JTextField OrigemTxt;
     private javax.swing.JButton SalarioDecrescente;
     private javax.swing.JButton SaldoMaiorPredicate;
     private javax.swing.JButton SaldoTotal;
     private javax.swing.JTable TabelaContas;
+    private javax.swing.JButton TransferirBtn;
+    private javax.swing.JTextField ValorTxt;
     private javax.swing.JButton btnDepositar;
     private javax.swing.JButton btnFixa;
     private javax.swing.JButton btnIsenta;
@@ -679,6 +786,10 @@ public class ContaGUI extends javax.swing.JFrame {
     private javax.swing.JButton btnSacar;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;

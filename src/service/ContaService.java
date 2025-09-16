@@ -1,5 +1,6 @@
 package service;
 
+import banco.contaDAO;
 import exception.SaldoInsuficienteException;
 import model.ContaCorrente;
 
@@ -11,10 +12,13 @@ import model.Conta;
 
 public class ContaService {
 
-    // Coleção em memória de todas as contas
     private ArrayList<ContaCorrente> contas = new ArrayList<>();
+    private contaDAO contaDAO;
 
-    // Ler uma única conta do arquivo (primeira linha) e adicioná-la à lista
+     public ContaService() {
+        this.contaDAO = new contaDAO();     
+    }
+
     public ContaCorrente lerConta(String caminho) throws IOException {
         ArrayList<String> linhas = new ArrayList<>(Files.readAllLines(Paths.get(caminho)));
         if (linhas.isEmpty()) return null;
@@ -28,59 +32,51 @@ public class ContaService {
         return conta;
     }
 
-    // Lê todas as contas do arquivo e adiciona na lista
-    public void carregarTodasContas(String caminho) throws IOException {
-        ArrayList<String> linhas = new ArrayList<>(Files.readAllLines(Paths.get(caminho)));
-
-        for (String linha : linhas) {
-            String[] dados = linha.split(",");
-
-            int numero = Integer.parseInt(dados[0].trim());
-            String titular = dados[1].trim();
-            double saldo = Double.parseDouble(dados[2].trim());
-
-            ContaCorrente conta = new ContaCorrente(numero, titular, saldo);
-            adicionarConta(conta);
-        }
+    public void transferir(int numeroOrigem, int numeroDestino, double valor) {
+        contaDAO.transferir(numeroOrigem, numeroDestino, valor);
     }
 
-    // Adicionar conta à lista
+    
+    public List<ContaCorrente> carregarTodasContas() throws IOException {
+        List<Conta> contas = contaDAO.listar();
+        return contas.stream().map(c -> (ContaCorrente) c).toList();
+    }
+
     public void adicionarConta(ContaCorrente conta) {
         contas.add(conta);
+        contaDAO.inserir(conta); 
     }
 
-    // Buscar conta pelo número
     public ContaCorrente buscarConta(int numero) {
-       for (ContaCorrente c : contas) {
-            if (c.getNumero() == numero) {
-                return c;
-            }
-        }
+       Conta c = contaDAO.buscarPorNumero(numero);
+        if (c != null) return (ContaCorrente) c;
         return null;
     }
 
-    // Listar todas as contas
     public ArrayList<ContaCorrente> getContas() {
-        return contas;
+        List<Conta> todas = contaDAO.listar();
+        ArrayList<ContaCorrente> ccList = new ArrayList<>();
+        for (Conta c : todas) {
+            ccList.add((ContaCorrente) c);
+        }
+        return ccList;
     }
 
-    // Sacar valor de uma conta
     public void sacarValor(ContaCorrente conta, double valor) throws SaldoInsuficienteException {
-        conta.sacar(valor);
+         conta.sacar(valor);
+        contaDAO.atualizarSaldo(conta.getNumero(), conta.getSaldo());
     }
 
-    // Depositar valor em uma conta
     public void depositarValor(ContaCorrente conta, double valor) {
         conta.depositar(valor);
+        contaDAO.atualizarSaldo(conta.getNumero(), conta.getSaldo());
     }
 
-    // Atualizar conta em arquivo
     public void atualizarConta(ContaCorrente conta, String caminho) throws IOException {
         String dados = conta.getNumero() + "," + conta.getTitular() + "," + conta.getSaldo();
         Files.write(Paths.get(caminho), dados.getBytes());
     }
     
-    // Salvar as Contas em arquivo
     public void salvarContas(String caminho) throws IOException {
         ArrayList<String> linhas = new ArrayList<>();
         for (ContaCorrente c : contas) {
