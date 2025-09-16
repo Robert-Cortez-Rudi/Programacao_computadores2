@@ -53,7 +53,7 @@ public class contaDAO {
     }
 
     public Conta buscarPorNumero(int numero) {
-        String sql = "SELECT * FROM conta WHERE numero=?";
+        String sql = "SELECT * FROM conta WHERE numero = ?";
         try (Connection conn = conexaoBanco.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -75,7 +75,7 @@ public class contaDAO {
     }
 
     public void atualizarSaldo(int numero, double novoSaldo) {
-        String sql = "UPDATE conta SET saldo=? WHERE numero=?";
+        String sql = "UPDATE conta SET saldo= ? WHERE numero = ?";
         try (Connection conn = conexaoBanco.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -88,8 +88,8 @@ public class contaDAO {
         }
     }
 
-    public void remover(int numero) {
-        String sql = "DELETE FROM conta WHERE numero=?";
+    public void remover(int numero) { 
+        String sql = "DELETE FROM conta WHERE numero = ?";
         try (Connection conn = conexaoBanco.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
